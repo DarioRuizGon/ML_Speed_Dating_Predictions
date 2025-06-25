@@ -12,7 +12,7 @@ The aim of this project is to train a model to predict whether two individuals s
 
 The data used for this project were obtained from OpenML, the dataset is public and can be accessed at: [Speed Dating Dataset](https://www.openml.org/search?type=data&sort=runs&status=active&id=40536) or in this repository, in the data_sample directory:
 ```python
-data, meta = data, meta = arff.loadarff("./src/data_sample/speed_dating.arff")
+data, meta = arff.loadarff("./src/data_sample/speed_dating.arff")
 ```
 Useful information on the variables can also be found in the same directory, in ´feature_information.txt´
 They contain data from several experimental speed dating events held by Columbia Business School. These data were originally gathered to determine gender differences in mate selection and contain a number of variables with information about both individuals taking part in each date. The data are also labelled (match [0 or 1]), what makes them suitable to solve a supervised classification problem.
