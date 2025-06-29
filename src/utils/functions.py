@@ -25,7 +25,7 @@ def binned_plots(df, bin_num, list_num, cat_col):
 def binned_value_counts(df, bin_num, list_num, cat_col):
     for col in list_num:
         for bin in range(bin_num):
-            serie = df.loc[pd.cut(df[col], 5, labels= range(0,5)) == bin, cat_col]
+            serie = df.loc[pd.cut(df[col], bin_num, labels= range(bin_num)) == bin, cat_col]
             print(f"% match para {col}, bin {bin}", serie.value_counts(True), sep= "\n")
 
 def ready_for_pipeline(df):
