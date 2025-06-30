@@ -26,7 +26,7 @@ def binned_value_counts(df, bin_num, list_num, cat_col):
     for col in list_num:
         for bin in range(bin_num):
             serie = df.loc[pd.cut(df[col], bin_num, labels= range(bin_num)) == bin, cat_col]
-            print(f"% match para {col}, bin {bin}", serie.value_counts(True), sep= "\n")
+            print(f"% match para {col}, bin {bin}, nº de instancias: {serie.count()}", serie.value_counts(True), sep= "\n")
 
 def ready_for_pipeline(df):
     df_ready = df.drop_duplicates(keep = False, inplace = True)
