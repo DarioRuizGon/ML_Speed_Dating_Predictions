@@ -144,36 +144,35 @@ def ready_for_prediction(X_test, train, train_original, variables_for_engineerin
 
     X_test_processed = pd.DataFrame(simple_imputer.transform(X_test_processed), columns= [re.match(r".*__(.*)", col).group(1) for col in simple_imputer.get_feature_names_out()], index = X_test_processed.index) # Reconstruyo el dataframe
 
-    for attribute in ["attractive", "shared_interests"]:
-        X_test_processed[f"dif_{attribute}_important"] = np.abs(X_test_processed[f"pref_o_{attribute}"] - X_test_processed[f"{attribute}_important"]) # Creo las dos variables de diferencia entre la importancia que cada persona le da a determinados atributos que voy a necesitar
+    X_test_processed[f"dif_attractive_important"] = np.abs(X_test_processed[f"pref_o_attractive"] - X_test_processed[f"attractive_important"]) # Creo las dos variables de diferencia entre la importancia que cada persona le da a determinados atributos que voy a necesitar
     
     coef, _ = pearsonr(X_test_processed[[f"{attribute}_important" for attribute in attributes]], X_test_processed[[f"pref_o_{attribute}" for attribute in attributes]], axis = 1) # Calculo la correlación entre la importancia que cada persona le da a todos los atributos mediante el coeficiente de pearson 
     X_test_processed["preferences_correlate"] = coef # y la guardo como variable
     X_test_processed["preferences_correlate"] = X_test_processed.preferences_correlate.fillna(0) # Imputo los nulos que se generan con 0 como hice con train
 
-    X_test_processed["dif_age_as_pctg"] = round(np.abs(X_test_processed.age - X_test_processed.age_o) / (X_test_processed.age + X_test_processed.age_o) * 100, 2) # Creo la variable de diferencia de edad como porcentage de las edades sumadas de las dos personas
+    X_test_processed["dif_as_age_o_pctg"] = round(np.abs(X_test_processed.age - X_test_processed.age_o) / X_test_processed.age_o * 100, 2) # Creo la variable de diferencia de edad como porcentage de "age_o"
 
     X_test_processed = X_test_processed.copy()[final_features]
 
     if gaussian_like_and_scaled: # Le aplico a cada variable la misma transformación que he usado al transformar train para hacer su distribución más similar a la gaussiana
         train_scaling = train.copy()
 
-        boxcox_list = ["dif_attractive_important", "dif_shared_interests_important", "dif_age_as_pctg"]
-        for col in boxcox_list:
-            if train_scaling[col].min() <= 0:
-                train_scaling[col] = train_scaling[col] + 1 # Si voy a utilizar box-cox y tienen valores 0 o negativos les sumo 1 tanto en train (para entrenar el transformador) como en test
-                X_test_processed[col] = X_test_processed[col] + 1
+        boxcox_col = "dif_attractive_important"
+        if train_scaling[boxcox_col].min() <= 0:
+            train_scaling[boxcox_col] = train_scaling[boxcox_col] + 1 # Si voy a utilizar box-cox y tienen valores 0 o negativos les sumo 1 tanto en train (para entrenar el transformador) como en test
+            X_test_processed[boxcox_col] = X_test_processed[boxcox_col] + 1
 
-        yeo_list = ["interests_correlate", "preferences_correlate"]
+        yeo_list = ["interests_correlate", "preferences_correlate", "dif_as_age_o_pctg"]
 
         gaussian_transformer = ColumnTransformer(
-            [("Box-cox", PowerTransformer("box-cox", standardize= True), boxcox_list),
+            [("Box-cox", PowerTransformer("box-cox", standardize= True), [boxcox_col]),
             ("Yeo-Johnson", PowerTransformer("yeo-johnson", standardize= True), yeo_list)],
             remainder= "passthrough"
         ) # No necesitan escalado, ya que el PowerTransformer ya estandariza
 
         gaussian_transformer.fit(train_scaling[final_features]) # Entreno con train
 
-        X_test_processed = pd.DataFrame(gaussian_transformer.transform(X_test_processed), columns= [re.match(r".*__(.*)", col).group(1) for col in gaussian_transformer.get_feature_names_out()], index= X_test_processed.index)      
+        X_test_processed = pd.DataFrame(gaussian_transformer.transform(X_test_processed), columns= [re.match(r".*__(.*)", col).group(1) for col in gaussian_transformer.get_feature_names_out()], index= X_test_processed.index)
+        X_test_processed = X_test_processed.copy()[final_features]      
 
     return X_test_processed
