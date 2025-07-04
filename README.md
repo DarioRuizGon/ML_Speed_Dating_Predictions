@@ -59,7 +59,7 @@ Realicé tanto un análisis univariante como un análisis bivariante de todas mi
 Una vez creadas las nuevas features que se me habían ocurrido durante los pasos anteriores, así como transformadas las features numéricas para dotarlas de una distribución más gaussiana y escaladas (estos dos procesos son especialmente útiles para los modelos basados en la distancia), realicé una selección final de features del mismo modo que lo había hecho en la selección preliminar. Los mejores resultados fueron los siguientes
 
 |model| features_set |balanced_accuracy|
-|--|----|
+|--|--|--|
 |XGBoost |RFECV selection| 0.768713|
 |LightGBM |RFECV selection| 0.691811|
 |KNN |RFECV selection| 0.681842|
@@ -79,12 +79,13 @@ Teniendo en cuenta los resultados anteriores, decidí optimizar los tres algorit
 Cuando evalué mi modelo con el conjunto de datos de prueba, el resultado fue incluso mejor que con la validación cruzada. El informe de clasificación fue el siguiente:  
 
 |-| class |precision | recall| f1-score | support|
-|-|-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |-|0| 0.95 | 0.98 | 0.96 | |
 |-|1 | 0.88 | 0.74 | 0.80 | 287|
 |accuracy|-| - | - | 0. 94 | 1676|
 |macro avg|-| 0.91 | 0.86 | 0.88 | 1676|
 |weighted avg |- | 0.93 | 0.94 | 0.93 | 1676|
+
 \*Balanced accuracy = macro avg x recall
 
 ### ***Estructura del repositorio***
@@ -184,6 +185,7 @@ When I evaluated my model against the test dataset, the result was even better t
 |accuracy|-| - | - |    0.94 |     1676|
 |macro avg|-|     0.91 |     0.86    |  0.88     | 1676|
 |weighted avg  |- |    0.93   |   0.94  |    0.93    |  1676|
+
 \*Balanced accuracy = macro avg x recall
 
 ### ***Repository structure***
